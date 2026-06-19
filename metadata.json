@@ -1,0 +1,6 @@
+{
+  "name": "StartSphere",
+  "description": "Launch your dream business in minutes with AI-powered equipment lists, budget planning, and supplier matching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

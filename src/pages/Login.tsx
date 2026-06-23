@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { 
-  Rocket, Mail, User, Shield, Info, ArrowRight, Check, Sparkles
+  Rocket, Mail, User, Shield, Info, ArrowRight, Check, Sparkles, Lock
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -11,9 +11,12 @@ export const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [isSignUp, setIsSignUp] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Determine redirection path (fallback to home)
@@ -22,6 +25,7 @@ export const Login = () => {
   const handleCustomLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     if (!displayName.trim()) {
       setError('Please provide your full name.');
@@ -31,21 +35,39 @@ export const Login = () => {
       setError('Please enter a valid email address.');
       return;
     }
+    if (isSignUp && (!password || password.length < 6)) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
 
     setLoading(true);
     try {
-      await login(displayName, email);
-      navigate(from, { replace: true });
+      if (isSignUp) {
+        // Mock successful sign up message
+        setSuccess('Account created successfully! Logging you in...');
+        setTimeout(async () => {
+          try {
+            await login(displayName, email);
+            navigate(from, { replace: true });
+          } catch (err) {
+            setError('Auto-sign in after registration failed.');
+          }
+        }, 1200);
+      } else {
+        await login(displayName, email);
+        navigate(from, { replace: true });
+      }
     } catch (err) {
-      setError('Sign In failed. Please try again.');
+      setError(isSignUp ? 'Registration failed. Please try again.' : 'Sign In failed. Please try again.');
     } finally {
-      setLoading(false);
+      if (!isSignUp) setLoading(false);
     }
   };
 
   const handlePresetLogin = async (name: string, mail: string) => {
     setLoading(true);
     setError('');
+    setSuccess('');
     try {
       await login(name, mail);
       navigate(from, { replace: true });
@@ -73,8 +95,15 @@ export const Login = () => {
           <div className="inline-flex w-14 h-14 bg-indigo-600/20 border border-indigo-500/30 rounded-2xl items-center justify-center text-indigo-400 mb-4 shadow-lg shadow-indigo-600/10">
             <Rocket size={30} />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-white font-display mb-2">Welcome to StartSphere</h2>
-          <p className="text-sm text-slate-400">Launch and configure your AI-powered business blueprint</p>
+          <h2 className="text-3xl font-bold tracking-tight text-white font-display mb-2">
+            {isSignUp ? 'Create Your Account' : 'Welcome to StartSphere'}
+          </h2>
+          <p className="text-sm text-slate-400 px-4">
+            {isSignUp 
+              ? 'Join StartSphere and begin building elite AI business plans' 
+              : 'Launch and configure your AI-powered business blueprint'
+            }
+          </p>
         </div>
 
         {/* Login Card */}
@@ -91,9 +120,16 @@ export const Login = () => {
           )}
 
           {error && (
-            <div className="mb-6 p-3.5 bg-rose-500/10 border border-rose-500/20 rounded-xl flex items-start gap-2.5 text-xs text-rose-300">
+            <div className="mb-6 p-3.5 bg-rose-500/10 border border-rose-500/20 rounded-xl flex items-start gap-2.5 text-xs text-rose-300 animate-pulse">
               <Info size={16} className="mt-0.5 flex-shrink-0" />
               <span>{error}</span>
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-6 p-3.5 bg-emerald-500/15 border border-emerald-500/25 rounded-xl flex items-start gap-2.5 text-xs text-emerald-300">
+              <Check size={16} className="mt-0.5 flex-shrink-0" />
+              <span>{success}</span>
             </div>
           )}
 
@@ -113,6 +149,7 @@ export const Login = () => {
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Renuka Ruttala"
                   className="block w-full pl-11 pr-4 py-3 bg-slate-950/60 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                  required
                 />
               </div>
             </div>
@@ -132,9 +169,36 @@ export const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="123@gmail.com"
                   className="block w-full pl-11 pr-4 py-3 bg-slate-950/60 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                  required
                 />
               </div>
             </div>
+
+            {isSignUp && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                transition={{ duration: 0.2 }}
+              >
+                <label htmlFor="pwd-input" className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                  Create Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                    <Lock size={18} />
+                  </div>
+                  <input
+                    id="pwd-input"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required={isSignUp}
+                    className="block w-full pl-11 pr-4 py-3 bg-slate-950/60 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                  />
+                </div>
+              </motion.div>
+            )}
 
             <button
               id="submit-btn"
@@ -142,10 +206,29 @@ export const Login = () => {
               disabled={loading}
               className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/20 text-sm flex items-center justify-center gap-2 group cursor-pointer"
             >
-              <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+              <span>{loading ? 'Processing...' : (isSignUp ? 'Create Account' : 'Sign In')}</span>
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </form>
+
+          {/* Account Exist Toggle Footnote */}
+          <div className="mt-6 text-center text-xs">
+            <span className="text-slate-400">
+              {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+            </span>
+            <button
+              id="auth-toggle-btn"
+              type="button"
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setError('');
+                setSuccess('');
+              }}
+              className="text-indigo-400 hover:text-indigo-300 font-bold underline focus:outline-none cursor-pointer"
+            >
+              {isSignUp ? 'Sign In Instead' : 'Create an Account'}
+            </button>
+          </div>
 
           {/* Divider */}
           <div className="my-6 flex items-center justify-between gap-4">

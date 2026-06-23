@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Home } from './pages/Home';
+import { Login } from './pages/Login';
+import { SignOut } from './pages/SignOut';
 import { AIGenerator } from './components/AIGenerator';
 import { Compare } from './pages/Compare';
 import { Dashboard } from './components/Dashboard';
@@ -83,6 +85,9 @@ const AnimatedRoutes = () => {
       >
         <Routes location={location}>
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signout" element={<SignOut />} />
+          <Route path="/logout" element={<SignOut />} />
           <Route path="/generate/:categoryId" element={<AIGenerator />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/dashboard" element={<Dashboard />} />

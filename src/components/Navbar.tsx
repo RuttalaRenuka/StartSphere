@@ -48,15 +48,15 @@ export const Navbar = () => {
                   <img src={user.photoURL || ''} alt="" className="w-8 h-8 rounded-full border border-white/10 shadow-md" />
                   <span className="text-sm font-bold text-slate-200">{user.displayName?.split(' ')[0]}</span>
                 </Link>
-                <button onClick={logout} className="p-2 text-slate-400 hover:text-red-400 transition-all">
+                <Link to="/signout" className="p-2 text-slate-400 hover:text-red-400 transition-all">
                   <LogOut size={18} />
-                </button>
+                </Link>
               </div>
             ) : (
-              <button onClick={login} className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-500 transition-all shadow-md shadow-indigo-600/20">
+              <Link to="/login" className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-500 transition-all shadow-md shadow-indigo-600/20">
                 <LogIn size={16} />
                 <span>Sign In</span>
-              </button>
+              </Link>
             )}
           </div>
 
@@ -98,15 +98,15 @@ export const Navbar = () => {
                       <img src={user.photoURL || ''} alt="" className="w-8 h-8 rounded-full border border-white/10" />
                       <span className="text-sm font-bold text-slate-200">{user.displayName}</span>
                     </div>
-                    <button onClick={() => { logout(); setIsOpen(false); }} className="text-slate-400 hover:text-red-400">
+                    <Link to="/signout" onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-red-400">
                       <LogOut size={20} />
-                    </button>
+                    </Link>
                   </div>
                 ) : (
-                  <button onClick={() => { login(); setIsOpen(false); }} className="flex items-center justify-center space-x-2 w-full py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm">
+                  <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center justify-center space-x-2 w-full py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm">
                     <LogIn size={18} />
                     <span>Sign In</span>
-                  </button>
+                  </Link>
                 )}
               </div>
             </div>

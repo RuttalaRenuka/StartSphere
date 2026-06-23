@@ -28,7 +28,7 @@ const useFirebase = false; // Toggle this if config is available
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: () => Promise<void>;
+  login: (displayName?: string, email?: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -41,19 +41,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Check if user is in localStorage (Mock Auth for preview)
     const savedUser = localStorage.getItem('startsphere_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    let parsedUser = savedUser ? JSON.parse(savedUser) : null;
+    
+    // Auto-migrate or set default user profile to Renuka Ruttala 123@gmail.com
+    if (!parsedUser || parsedUser.displayName?.includes('Alex') || parsedUser.email?.includes('alex')) {
+      const defaultUser = {
+        uid: 'mock-123',
+        displayName: 'Renuka Ruttala',
+        email: '123@gmail.com',
+        photoURL: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&auto=format&fit=crop',
+      } as User;
+      setUser(defaultUser);
+      localStorage.setItem('startsphere_user', JSON.stringify(defaultUser));
+    } else {
+      setUser(parsedUser);
     }
     setLoading(false);
   }, []);
 
-  const login = async () => {
+  const login = async (displayName?: string, email?: string) => {
     // Mock login for preview since Firebase setup failed
     const mockUser = {
       uid: 'mock-123',
-      displayName: 'Alex Entrepreneur',
-      email: 'alex@example.com',
-      photoURL: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop',
+      displayName: displayName || 'Renuka Ruttala',
+      email: email || '123@gmail.com',
+      photoURL: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&auto=format&fit=crop',
     } as User;
     
     setUser(mockUser);
